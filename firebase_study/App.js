@@ -7,31 +7,13 @@
  */
 
 import React, { useState, useEffect } from "react";
-
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-  Button,
-  Alert
-} from 'react-native';
-
-
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
+import { TextInput, StyleSheet, Text, SafeAreaView, FlatList, TouchableOpacity, Image, View, Dimensions, Button } from 'react-native'
 
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, onValue, set } from "firebase/database";
+
+const deviceWidth = Dimensions.get('screen').width
+const deviceHeight = Dimensions.get('screen').height
 
 const firebaseConfig = {
   apiKey: "AIzaSyBLeUe16wlLroQmzmj31BtdOo21ZLcNStM",
@@ -44,113 +26,134 @@ const firebaseConfig = {
   measurementId: "G-75VDC31XVB"
 };
 
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-const Section = ({ children, title }) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
-
+const Item = ({ item, onPress }) => (
+  <View height={deviceHeight * 0.25} width={deviceWidth * 0.4} alignItems={'center'}
+    // backgroundColor = {'pink'} 
+    margin={deviceWidth * 0.025}>
+    <TouchableOpacity onPress={onPress}>
+      <Image width={100} height={100} source={{
+        uri: item.ImageURL.length > 0 ? item.ImageURL : null
+      }} style={styles.profileImage} />
+      <Text style={styles.boldText}>{`${item.Name} ${item.Title}`}</Text>
+      <Text style={styles.plainText}>{`${item.Department}`}</Text>
+      <Text style={styles.plainText}>{`${item.Team}`}</Text>
+    </TouchableOpacity>
+  </View>
+);
 const App = () => {
-  const isDarkMode = useColorScheme() === 'dark';
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
+  const [data, setData] = useState([])
   const app = initializeApp(firebaseConfig);
-
   const db = getDatabase(app);
-
-  const [userDB, setUserDB] = useState([]);
-
   const employeeDBRef = ref(db, 'employees/');
+
+  // var [fillteredData, setFillteredData] = useState([...data])
+  var [fillteredData, setFillteredData] = useState([])
+  const [modalVisible, setModalVisible] = useState(false)
+  const [selectedData, setSelectedData] = useState({
+    Name: "",
+    Title: "",
+    Rank: "",
+    Major: "",
+    YearOfAdmission: "",
+    Department: "",
+    Team: "",
+    ImageURL: "null"
+  });
+
+  const modalCallBack = (requestClose) => {
+    setModalVisible(false)
+  }
+  const onChangeText = text => {
+    setFillteredData(data.filter((item) => item.Name.includes(text) ||
+      item.Title.includes(text) ||
+      `${item.YearOfAdmission자}`.includes(text) ||
+      item.Major.includes(text) ||
+      item.Department.includes(text) ||
+      item.Team.includes(text) ||
+      item.Rank.includes(text)
+    ))
+  }
+  const renderItem = ({ item }) => {
+    return (<Item item={item} onPress={() => {
+      setSelectedData(item)
+      setModalVisible(!modalVisible)
+    }} />);
+  };
 
   useEffect(() => {
     onValue(employeeDBRef, (snapshot) => {
-      const data = snapshot.val();
-      setUserDB(data)
+      const data_snapshot = snapshot.val();
+      setData(data_snapshot)
+      setFillteredData(...data_snapshot)
       console.log("FETCHING COMPLETE")
+      console.log(data_snapshot[0].YearOfAdmission)
     });
   }, []);
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
+    <SafeAreaView style={styles.safeAreaView}>
+        {/* <DetailModal modalVisible={modalVisible} selectedData={selectedData} callback = {modalCallBack}/> */}
+        <TextInput style={styles.textInput} onChangeText={onChangeText} selectionColor={'black'} />
+        <Button
+        title="data"
+        onPress={() => console.log(data)}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            <Button
-              title="Press me"
-              onPress={() => console.log(userDB)}
-            // Alert.alert('Simple Button pressed')
-            />
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
+      <Button
+        title="filtered data"
+        onPress={() => console.log(data)}
+      />
+        <FlatList data={fillteredData}
+            showsVerticalScrollIndicator={false} renderItem={renderItem} keyExtractor={(item, index) => index} numColumns={2}
+            columnWrapperStyle={{
+                justifyContent: 'space-between',
+                marginBottom: 0
+            }} styles={styles.flatList}
+            // backgroundColor={'blue'}
+            width={deviceWidth * 0.9} />
     </SafeAreaView>
   );
 };
-
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  textInput: {
+      width: '80%',
+      height: 40,
+      borderWidth: 1,
+      borderColor: 'lightgray',
+      backgroundColor: 'lightgray',
+      borderRadius: 10,
+      marginTop: 20,
+      marginBottom: 20,
+      paddingLeft: 15
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  safeAreaView: {
+      alignItems: 'center',
+      flex: 1.0,
+      backgroundColor : 'white'
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+  profileImage: {
+      width: 100,
+      height: 100,
+      borderRadius: 100
   },
-  highlight: {
-    fontWeight: '700',
+  flatList: {
+      marginBottom: 200
   },
+  plainText: {
+      textAlign: 'center',
+      paddingTop: 7,
+      fontSize: 13,
+      color : 'gray'
+  },
+  boldText: {
+      textAlign: 'center',
+      paddingTop: 7,
+      fontWeight: "bold",
+      fontSize: 15
+
+  },
+
 });
+
 
 export default App;
