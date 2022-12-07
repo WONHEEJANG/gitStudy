@@ -16,7 +16,7 @@ function DetailModal({ modalVisible, selectedData, callback }) {
                 <Pressable style={styles.modal}
                 onPress={() => {}}> 
                     <Image width={1} height={1} source={{
-                        uri: selectedData.avatarUrl.length > 0 ? selectedData.avatarUrl : null
+                        uri: selectedData.ImageURL.length > 0 ? selectedData.ImageURL : null
                     }} style={styles.profileImage} />
                     <Text style={styles.boldText}>{`${selectedData.Name} ${selectedData.Title}`}</Text>
                     <View style={styles.textRow}>

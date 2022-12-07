@@ -1,20 +1,24 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
 import React, { useState, useEffect } from "react";
-import { TextInput, StyleSheet, Text, SafeAreaView, FlatList, TouchableOpacity, Image, View, Dimensions, Button } from 'react-native'
+import { 
+  TextInput, 
+  StyleSheet, 
+  Text, 
+  SafeAreaView, 
+  FlatList, 
+  TouchableOpacity, 
+  Image, 
+  View, 
+  Dimensions, 
+  Button 
+} from 'react-native'
 
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, onValue, set } from "firebase/database";
+import DetailModal from "./Components/DetailModal";
+
 
 const deviceWidth = Dimensions.get('screen').width
 const deviceHeight = Dimensions.get('screen').height
-
 const firebaseConfig = {
   apiKey: "AIzaSyBLeUe16wlLroQmzmj31BtdOo21ZLcNStM",
   authDomain: "fir-test-5ce77.firebaseapp.com",
@@ -26,9 +30,10 @@ const firebaseConfig = {
   measurementId: "G-75VDC31XVB"
 };
 
+
+
 const Item = ({ item, onPress }) => (
   <View height={deviceHeight * 0.25} width={deviceWidth * 0.4} alignItems={'center'}
-    // backgroundColor = {'pink'} 
     margin={deviceWidth * 0.025}>
     <TouchableOpacity onPress={onPress}>
       <Image width={100} height={100} source={{
@@ -40,6 +45,10 @@ const Item = ({ item, onPress }) => (
     </TouchableOpacity>
   </View>
 );
+
+
+
+
 const App = () => {
 
   const [data, setData] = useState([])
@@ -47,8 +56,7 @@ const App = () => {
   const db = getDatabase(app);
   const employeeDBRef = ref(db, 'employees/');
 
-  // var [fillteredData, setFillteredData] = useState([...data])
-  var [fillteredData, setFillteredData] = useState([])
+  const [fillteredData, setFillteredData] = useState([])
   const [modalVisible, setModalVisible] = useState(false)
   const [selectedData, setSelectedData] = useState({
     Name: "",
@@ -64,16 +72,20 @@ const App = () => {
   const modalCallBack = (requestClose) => {
     setModalVisible(false)
   }
+
+
   const onChangeText = text => {
+    console.log("onchange!")
     setFillteredData(data.filter((item) => item.Name.includes(text) ||
       item.Title.includes(text) ||
-      `${item.YearOfAdmission자}`.includes(text) ||
+      `${item.YearOfAdmission}`.includes(text) ||
       item.Major.includes(text) ||
       item.Department.includes(text) ||
       item.Team.includes(text) ||
       item.Rank.includes(text)
     ))
   }
+
   const renderItem = ({ item }) => {
     return (<Item item={item} onPress={() => {
       setSelectedData(item)
@@ -81,39 +93,33 @@ const App = () => {
     }} />);
   };
 
+
   useEffect(() => {
     onValue(employeeDBRef, (snapshot) => {
       const data_snapshot = snapshot.val();
       setData(data_snapshot)
-      setFillteredData(...data_snapshot)
+      setFillteredData(data_snapshot)
       console.log("FETCHING COMPLETE")
-      console.log(data_snapshot[0].YearOfAdmission)
     });
   }, []);
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
-        {/* <DetailModal modalVisible={modalVisible} selectedData={selectedData} callback = {modalCallBack}/> */}
+        <DetailModal modalVisible={modalVisible} selectedData={selectedData} callback = {modalCallBack}/>
         <TextInput style={styles.textInput} onChangeText={onChangeText} selectionColor={'black'} />
-        <Button
-        title="data"
-        onPress={() => console.log(data)}
-      />
-      <Button
-        title="filtered data"
-        onPress={() => console.log(data)}
-      />
         <FlatList data={fillteredData}
             showsVerticalScrollIndicator={false} renderItem={renderItem} keyExtractor={(item, index) => index} numColumns={2}
             columnWrapperStyle={{
                 justifyContent: 'space-between',
                 marginBottom: 0
             }} styles={styles.flatList}
-            // backgroundColor={'blue'}
             width={deviceWidth * 0.9} />
     </SafeAreaView>
   );
 };
+
+
+
 const styles = StyleSheet.create({
   textInput: {
       width: '80%',
