@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import HomeScreen from "./Screens/HomeScreen";
+import HomeScreenSkeleton from "./Screens/HomeScreenSkeleton";
+
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, onValue, set } from "firebase/database";
 
@@ -21,6 +23,8 @@ const firebaseConfig = {
 const App = () => {
 
   const [data, setData] = useState([])
+  const [isLoaded, setIsLoaded] = useState(false)
+
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
   const employeeDBRef = ref(db, 'employees/');
@@ -29,13 +33,14 @@ const App = () => {
     onValue(employeeDBRef, (snapshot) => {
       const data_snapshot = snapshot.val();
       setData(data_snapshot)
+      setIsLoaded(true)
       console.log("FETCHING COMPLETE")
       console.log(data_snapshot)
     });
   }, []);
 
   return (
-    <HomeScreen userDB = {data}/>
+    isLoaded ? <HomeScreen userDB = {data}/> : <HomeScreenSkeleton/>
   );
 };
 
