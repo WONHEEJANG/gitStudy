@@ -26,7 +26,7 @@ const Item = ({ item, onPress }) => (
 function HomeScreen({ navigation, userDB }) {
 
     const [data, setData] = useState(userDB)
-    const [fillteredData, setFillteredData] = useState(data)
+    const [fillteredData, setFillteredData] = useState(userDB)
 
     const [modalVisible, setModalVisible] = useState(false)
     const [selectedData, setSelectedData] = useState({

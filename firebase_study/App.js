@@ -2,10 +2,13 @@ import React, { useState, useEffect } from "react";
 import HomeScreen from "./Screens/HomeScreen";
 import HomeScreenSkeleton from "./Screens/HomeScreenSkeleton";
 
+/* Firebase Realtime Database */ 
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, onValue, set } from "firebase/database";
 
-
+/* Navigator */
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBLeUe16wlLroQmzmj31BtdOo21ZLcNStM",
@@ -18,9 +21,9 @@ const firebaseConfig = {
   measurementId: "G-75VDC31XVB"
 };
 
-
-
 const App = () => {
+
+  const Tab = createBottomTabNavigator();
 
   const [data, setData] = useState([])
   const [isLoaded, setIsLoaded] = useState(false)
@@ -40,9 +43,44 @@ const App = () => {
   }, []);
 
   return (
-    isLoaded ? <HomeScreen userDB = {data}/> : <HomeScreenSkeleton/>
+<NavigationContainer>
+      <Tab.Navigator screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => { //tabBar Icon Custom
+
+            if (route.name === '홈') {
+              // if(focused) return <Home width = {size} height = {size} fill={focusedColor}/>
+              // else return <HomeOutline width = {size} height = {size} color={unfocusedColor}/>
+            } 
+            
+            else if (route.name === '찾기') {
+              // if(focused) return <Search width = {size} height = {size} fill={focusedColor}/>
+              // else return <SearchOutline width = {size} height = {size} color={unfocusedColor}/>
+            }
+
+            else if (route.name === '설정') {
+              // if(focused) return <Settings width = {size} height = {size} fill={focusedColor}/>
+              // else return <SettingsOutline width = {size} height = {size} color={unfocusedColor}/>            
+            }
+          },
+          
+          tabBarLabelStyle: { //tabBar Font Custom
+            fontSize: 12,
+            fontWeight: "600",
+          },
+          tabBarShowLabel: false,
+          tabBarActiveTintColor: 'black', //tabBar TextColor Custom
+          tabBarInactiveTintColor: 'darkgray',
+          headerShown: false //tabBar Header Hide
+        })}
+      >
+        <Tab.Screen name="홈" component={() => isLoaded ? <HomeScreen userDB = {data}/> : <HomeScreenSkeleton/>} />
+        <Tab.Screen name="찾기" component={() => {}}/>
+        {/* <Tab.Screen name='설정' component={<></>} /> */}
+      </Tab.Navigator>
+    </NavigationContainer>
+
+    
   );
 };
-
 
 export default App;
