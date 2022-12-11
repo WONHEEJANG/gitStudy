@@ -25,7 +25,7 @@ function DetailModal({ modalVisible, selectedData, callback }) {
                     </View>
                     <View style={styles.textRow}>
                         <Text style={styles.plainText}>{`사무소명`}</Text>
-                        <Text style={styles.plainText}>{`${selectedData.Departure}`}</Text>
+                        <Text style={styles.plainText}>{`${selectedData.Department}`}</Text>
                     </View>
                     <View style={styles.textRow}>
                         <Text style={styles.plainText}>{`팀명`}</Text>
