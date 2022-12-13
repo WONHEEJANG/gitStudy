@@ -10,6 +10,21 @@ import { getDatabase, ref, onValue, set } from "firebase/database";
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
+/* SVG */
+import { WithLocalSvg } from 'react-native-svg'
+import Search from './icons/search.svg';
+import SearchOutline from './icons/search-outline.svg';
+import Settings from './icons/settings.svg';
+import SettingsOutline from './icons/settings-outline.svg';
+import Home from "./icons/home.svg";
+import HomeOutline from "./icons/home-outline.svg";
+
+// Hiding Yellow Log Box
+
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
+LogBox.ignoreAllLogs();//Ignore all log notifications 
+
 const firebaseConfig = {
   apiKey: "AIzaSyBLeUe16wlLroQmzmj31BtdOo21ZLcNStM",
   authDomain: "fir-test-5ce77.firebaseapp.com",
@@ -24,6 +39,8 @@ const firebaseConfig = {
 const App = () => {
 
   const Tab = createBottomTabNavigator();
+  const focusedColor = '#000000'
+  const unfocusedColor = '#D3D3D3'
 
   const [data, setData] = useState([])
   const [isLoaded, setIsLoaded] = useState(false)
@@ -48,18 +65,19 @@ const App = () => {
           tabBarIcon: ({ focused, color, size }) => { //tabBar Icon Custom
 
             if (route.name === '홈') {
-              // if(focused) return <Home width = {size} height = {size} fill={focusedColor}/>
+              if(focused) return <WithLocalSvg width={size} height={size} fill={focusedColor} asset={Home}/>
+              else return <WithLocalSvg width={size} height={size} fill={unfocusedColor} asset={HomeOutline}/>
               // else return <HomeOutline width = {size} height = {size} color={unfocusedColor}/>
             } 
             
             else if (route.name === '찾기') {
-              // if(focused) return <Search width = {size} height = {size} fill={focusedColor}/>
-              // else return <SearchOutline width = {size} height = {size} color={unfocusedColor}/>
+              if(focused) return <WithLocalSvg width={size} height={size} fill={focusedColor} asset={Search}/>
+              else return <WithLocalSvg width={size} height={size} fill={unfocusedColor} asset={SearchOutline}/>
             }
 
             else if (route.name === '설정') {
-              // if(focused) return <Settings width = {size} height = {size} fill={focusedColor}/>
-              // else return <SettingsOutline width = {size} height = {size} color={unfocusedColor}/>            
+              if(focused) return <WithLocalSvg width={size} height={size} fill={focusedColor} asset={Settings}/>
+              else return <WithLocalSvg width={size} height={size} fill={unfocusedColor} asset={SettingsOutline}/>
             }
           },
           
@@ -74,8 +92,8 @@ const App = () => {
         })}
       >
         <Tab.Screen name="홈" component={() => isLoaded ? <HomeScreen userDB = {data}/> : <HomeScreenSkeleton/>} />
-        <Tab.Screen name="찾기" component={() => {}}/>
-        {/* <Tab.Screen name='설정' component={<></>} /> */}
+        <Tab.Screen name="찾기" component={() => isLoaded ? <></> : <></>} />
+        <Tab.Screen name="설정" component={() => isLoaded ? <></> : <></>} />
       </Tab.Navigator>
     </NavigationContainer>
 
