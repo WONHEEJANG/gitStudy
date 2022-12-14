@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import HomeScreen from "./Screens/HomeScreen";
 import HomeScreenSkeleton from "./Screens/HomeScreenSkeleton";
 
-/* Firebase Realtime Database */ 
+/* Firebase Realtime Database */
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, onValue, set } from "firebase/database";
 
@@ -21,7 +21,8 @@ import HomeOutline from "./icons/home-outline.svg";
 
 // Hiding Yellow Log Box
 
-import { LogBox } from 'react-native';
+import { Alert, LogBox } from 'react-native';
+import LoginScreen from "./Screens/LoginScreen";
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
 LogBox.ignoreAllLogs();//Ignore all log notifications 
 
@@ -44,10 +45,17 @@ const App = () => {
 
   const [data, setData] = useState([])
   const [isLoaded, setIsLoaded] = useState(false)
+  const [isLogin, setIsLogin] = useState(false)
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
   const employeeDBRef = ref(db, 'employees/');
+
+
+  const LoginCallBack = () => {
+    setIsLogin(true)
+    Alert.alert('LoginCallBack')
+}
 
   useEffect(() => {
     onValue(employeeDBRef, (snapshot) => {
@@ -58,46 +66,53 @@ const App = () => {
       console.log(data_snapshot)
     });
   }, []);
+  
+  
+  if(!isLogin){
+    return(
+      <LoginScreen callback = {LoginCallBack}/>
+    )
+  }
 
   return (
-<NavigationContainer>
+    <NavigationContainer>
       <Tab.Navigator screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => { //tabBar Icon Custom
+        tabBarIcon: ({ focused, color, size }) => { //tabBar Icon Custom
 
-            if (route.name === '홈') {
-              if(focused) return <WithLocalSvg width={size} height={size} fill={focusedColor} asset={Home}/>
-              else return <WithLocalSvg width={size} height={size} fill={unfocusedColor} asset={HomeOutline}/>
-              // else return <HomeOutline width = {size} height = {size} color={unfocusedColor}/>
-            } 
-            
-            else if (route.name === '찾기') {
-              if(focused) return <WithLocalSvg width={size} height={size} fill={focusedColor} asset={Search}/>
-              else return <WithLocalSvg width={size} height={size} fill={unfocusedColor} asset={SearchOutline}/>
-            }
+          if (route.name === '홈') {
+            if (focused) return <WithLocalSvg width={size} height={size} fill={focusedColor} asset={Home} />
+            else return <WithLocalSvg width={size} height={size} fill={unfocusedColor} asset={HomeOutline} />
+            // else return <HomeOutline width = {size} height = {size} color={unfocusedColor}/>
+          }
 
-            else if (route.name === '설정') {
-              if(focused) return <WithLocalSvg width={size} height={size} fill={focusedColor} asset={Settings}/>
-              else return <WithLocalSvg width={size} height={size} fill={unfocusedColor} asset={SettingsOutline}/>
-            }
-          },
-          
-          tabBarLabelStyle: { //tabBar Font Custom
-            fontSize: 12,
-            fontWeight: "600",
-          },
-          tabBarShowLabel: false,
-          tabBarActiveTintColor: 'black', //tabBar TextColor Custom
-          tabBarInactiveTintColor: 'darkgray',
-          headerShown: false //tabBar Header Hide
-        })}
+          else if (route.name === '찾기') {
+            if (focused) return <WithLocalSvg width={size} height={size} fill={focusedColor} asset={Search} />
+            else return <WithLocalSvg width={size} height={size} fill={unfocusedColor} asset={SearchOutline} />
+          }
+
+          else if (route.name === '설정') {
+            if (focused) return <WithLocalSvg width={size} height={size} fill={focusedColor} asset={Settings} />
+            else return <WithLocalSvg width={size} height={size} fill={unfocusedColor} asset={SettingsOutline} />
+          }
+        },
+
+        tabBarLabelStyle: { //tabBar Font Custom
+          fontSize: 12,
+          fontWeight: "600",
+        },
+        tabBarShowLabel: false,
+        tabBarActiveTintColor: 'black', //tabBar TextColor Custom
+        tabBarInactiveTintColor: 'darkgray',
+        headerShown: false //tabBar Header Hide
+      })}
       >
-        <Tab.Screen name="홈" component={() => isLoaded ? <HomeScreen userDB = {data}/> : <HomeScreenSkeleton/>} />
+        <Tab.Screen name="홈" component={() => isLoaded ? <HomeScreen userDB={data} /> : <HomeScreenSkeleton />} />
         <Tab.Screen name="찾기" component={() => isLoaded ? <></> : <></>} />
         <Tab.Screen name="설정" component={() => isLoaded ? <></> : <></>} />
       </Tab.Navigator>
     </NavigationContainer>
 
-    
+
   );
 };
 
