@@ -40,12 +40,13 @@ const firebaseConfig = {
 const App = () => {
 
   const Tab = createBottomTabNavigator();
-  const focusedColor = '#000000'
-  const unfocusedColor = '#D3D3D3'
+  const focusedColor = 'black'
+  const unfocusedColor = 'lightgray'
 
   const [data, setData] = useState([])
   const [isLoaded, setIsLoaded] = useState(false)
   const [isLogin, setIsLogin] = useState(false)
+  const [loginUser, setLoginUser] = useState([])
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
@@ -53,9 +54,10 @@ const App = () => {
 
 
   const LoginCallBack = (id, pw) => {
-    data.find(e => e.ID === `${id}`) ? 
-    data.find(e => e.PW === `${pw}`) ? setIsLogin(true) : Alert.alert("비밀번호를 확인해주세요.") : Alert.alert(`사번을 확인해주세요.`)
-
+    
+    // data.find(e => e.ID === `${id}`) ? 
+    // data.find(e => e.PW === `${pw}`) ? setIsLogin(true) : Alert.alert("비밀번호를 확인해주세요.") : Alert.alert(`사번을 확인해주세요.`)
+    setIsLogin(true)
 }
 
   useEffect(() => {
@@ -82,18 +84,17 @@ const App = () => {
 
           if (route.name === '홈') {
             if (focused) return <WithLocalSvg width={size} height={size} fill={focusedColor} asset={Home} />
-            else return <WithLocalSvg width={size} height={size} fill={unfocusedColor} asset={HomeOutline} />
-            // else return <HomeOutline width = {size} height = {size} color={unfocusedColor}/>
+            else return <WithLocalSvg width={size} height={size} color={unfocusedColor} asset={HomeOutline} />
           }
 
           else if (route.name === '찾기') {
             if (focused) return <WithLocalSvg width={size} height={size} fill={focusedColor} asset={Search} />
-            else return <WithLocalSvg width={size} height={size} fill={unfocusedColor} asset={SearchOutline} />
+            else return <WithLocalSvg width={size} height={size} color={unfocusedColor} asset={SearchOutline} />
           }
 
           else if (route.name === '설정') {
             if (focused) return <WithLocalSvg width={size} height={size} fill={focusedColor} asset={Settings} />
-            else return <WithLocalSvg width={size} height={size} fill={unfocusedColor} asset={SettingsOutline} />
+            else return <WithLocalSvg width={size} height={size} color={unfocusedColor} asset={SettingsOutline} />
           }
         },
 
