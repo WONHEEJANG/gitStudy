@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { TextInput, StyleSheet, Text, TouchableOpacity, Image, View } from 'react-native'
+import { TextInput, StyleSheet, Text, TouchableOpacity, Image, View, KeyboardAvoidingView } from 'react-native'
 import { BlurView } from "@react-native-community/blur";
 
 
@@ -14,8 +14,8 @@ const LoginScreen = ({ callback }) => {
             <Image style={styles.bg} source={require('../icons/login_bg.jpeg')} />
             <BlurView style={styles.loginBg} blurAmount={25} blurType={'light'}>
                 <View style={styles.loginForm}>
-                    <TextInput style={styles.textInput} placeholder="사번" selectionColor={'black'} placeholderTextColor={'gray'} onChangeText={onChangeId} keyboardType={"numeric"}/>
-                    <TextInput style={styles.textInput} placeholder="비밀번호" selectionColor={'black'} placeholderTextColor={'gray'} onChangeText={onChangePw} secureTextEntry={true} marginBottom={50}/>
+                    <TextInput style={styles.textInput} placeholder="사번" selectionColor={'black'} placeholderTextColor={'gray'} onChangeText={onChangeId} keyboardType={"number-pad"}/>
+                    <TextInput style={styles.textInput} placeholder="비밀번호" selectionColor={'black'} placeholderTextColor={'gray'} onChangeText={onChangePw} secureTextEntry={true} marginBottom={60} onSubmitEditing={()=> callback(id,pw)}/>
                     
                     <TouchableOpacity style={styles.loginBtn} onPress={() => {
                             callback(id, pw)
@@ -24,7 +24,6 @@ const LoginScreen = ({ callback }) => {
                     </TouchableOpacity>
                 </View>
             </BlurView>
-
         </View>
     </>
     )
@@ -52,7 +51,8 @@ const styles = StyleSheet.create({
         flex: 1.0,
         justifyContent: 'center',
         zIndex: 1,
-        elevation: 1
+        elevation: 1,
+        // position:'absolute'
     },
 
     bg: {
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
         flex: 1.0,
         justifyContent: 'center',
         zIndex: 2,
-        elevation: 2
+        elevation: 2,
     },
 
     textInput: {
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: '100%',
         height: '100%',
-        position: 'absolute',
+        // position: 'absolute',
         justifyContent: 'center',
         borderColor: 'white',
         shadowColor: 'white',
