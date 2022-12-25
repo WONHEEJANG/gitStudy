@@ -4,16 +4,21 @@ import { BlurView } from "@react-native-community/blur";
 
 
 const LoginScreen = ({ callback }) => {
+
+    const [id, onChangeId] = React.useState("");
+    const [pw, onChangePw] = React.useState("");
+  
+
     return (<>
         <View style={styles.bgView}>
             <Image style={styles.bg} source={require('../icons/login_bg.jpeg')} />
             <BlurView style={styles.loginBg} blurAmount={25} blurType={'light'}>
                 <View style={styles.loginForm}>
-                    <TextInput style={styles.textInput} placeholder="사번" selectionColor={'black'} placeholderTextColor={'gray'} />
-                    <TextInput style={styles.textInput} placeholder="비밀번호" selectionColor={'black'} placeholderTextColor={'gray'} marginBottom={50}/>
+                    <TextInput style={styles.textInput} placeholder="사번" selectionColor={'black'} placeholderTextColor={'gray'} onChangeText={onChangeId} keyboardType={"numeric"}/>
+                    <TextInput style={styles.textInput} placeholder="비밀번호" selectionColor={'black'} placeholderTextColor={'gray'} onChangeText={onChangePw} secureTextEntry={true} marginBottom={50}/>
                     
                     <TouchableOpacity style={styles.loginBtn} onPress={() => {
-                            callback()
+                            callback(id, pw)
                         }}>
                         <Text style={styles.loginBtnTxt}>로그인</Text>
                     </TouchableOpacity>

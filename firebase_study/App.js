@@ -52,9 +52,10 @@ const App = () => {
   const employeeDBRef = ref(db, 'employees/');
 
 
-  const LoginCallBack = () => {
-    setIsLogin(true)
-    Alert.alert('LoginCallBack')
+  const LoginCallBack = (id, pw) => {
+    data.find(e => e.ID === `${id}`) ? 
+    data.find(e => e.PW === `${pw}`) ? setIsLogin(true) : Alert.alert("비밀번호를 확인해주세요.") : Alert.alert(`사번을 확인해주세요.`)
+
 }
 
   useEffect(() => {
