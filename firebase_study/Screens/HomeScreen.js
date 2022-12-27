@@ -23,7 +23,7 @@ const Item = ({ item, onPress }) => (
     </View>
 );
 
-function HomeScreen({ navigation, userDB }) {
+function HomeScreen({ navigation, userDB, loginUser }) {
 
     const [data, setData] = useState(userDB)
     const [fillteredData, setFillteredData] = useState(userDB)
@@ -85,6 +85,9 @@ function HomeScreen({ navigation, userDB }) {
                 marginBottom: 0
             }} styles={styles.flatList}
         />
+        <Text>{`${loginUser.Name}asdf`}</Text>
+        <Text>asdf</Text>
+        <Image source={`${loginUser.ImageURL}`}/>
     </SafeAreaView>
     )
 }

@@ -21,7 +21,7 @@ import HomeOutline from "./icons/home-outline.svg";
 
 // Hiding Yellow Log Box
 
-import { Alert, LogBox } from 'react-native';
+import { Alert, LogBox, Image, StyleSheet } from 'react-native';
 import LoginScreen from "./Screens/LoginScreen";
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
 LogBox.ignoreAllLogs();//Ignore all log notifications 
@@ -44,9 +44,10 @@ const App = () => {
   const unfocusedColor = 'lightgray'
 
   const [data, setData] = useState([])
+  const [loginUser, setLoginUser] = useState([])
+
   const [isLoaded, setIsLoaded] = useState(false)
   const [isLogin, setIsLogin] = useState(false)
-  const [loginUser, setLoginUser] = useState([])
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
@@ -54,26 +55,40 @@ const App = () => {
 
 
   const LoginCallBack = (id, pw) => {
-    
-    // data.find(e => e.ID === `${id}`) ? 
-    // data.find(e => e.PW === `${pw}`) ? setIsLogin(true) : Alert.alert("비밀번호를 확인해주세요.") : Alert.alert(`사번을 확인해주세요.`)
+
+    if (!data.find(e => e.ID === `${id}`)) {
+      Alert.alert(`사번을 확인해주세요.${id}`)
+      return null
+    }
+
+    if (!data.find(e => e.PW === `${pw}`)) {
+      Alert.alert(`비밀번호를 확인해주세요.${pw}`)
+      return null
+    }
+
     setIsLogin(true)
-}
+    console.log("[ 로그인성공 ]")
+    setLoginUser(data.filter(e => e.ID === id)[0])
+  }
+
+  useEffect(() => {
+    console.log(`loginUser 변화!!!${loginUser.Name}`);
+  }, [loginUser]);
 
   useEffect(() => {
     onValue(employeeDBRef, (snapshot) => {
       const data_snapshot = snapshot.val();
       setData(data_snapshot)
       setIsLoaded(true)
-      console.log("FETCHING COMPLETE")
+      console.log("[ FETCHING COMPLETE ]")
       console.log(data_snapshot)
     });
   }, []);
-  
-  
-  if(!isLogin){
-    return(
-      <LoginScreen callback = {LoginCallBack}/>
+
+
+  if (!isLogin) {
+    return (
+      <LoginScreen callback={LoginCallBack} />
     )
   }
 
@@ -93,8 +108,12 @@ const App = () => {
           }
 
           else if (route.name === '설정') {
+            // if (focused) return <WithLocalSvg width={size} height={size} fill={focusedColor} asset={Settings} />
+            // else return <WithLocalSvg width={size} height={size} color={unfocusedColor} asset={SettingsOutline} />
             if (focused) return <WithLocalSvg width={size} height={size} fill={focusedColor} asset={Settings} />
-            else return <WithLocalSvg width={size} height={size} color={unfocusedColor} asset={SettingsOutline} />
+            else return <Image style={styles.profile} width={size * 1.5} height={size  * 1.5}
+              source={{ uri: loginUser.ImageURL.length > 0 ? loginUser.ImageURL : null }} />
+
           }
         },
 
@@ -108,7 +127,7 @@ const App = () => {
         headerShown: false //tabBar Header Hide
       })}
       >
-        <Tab.Screen name="홈" component={() => isLoaded ? <HomeScreen userDB={data} /> : <HomeScreenSkeleton />} />
+        <Tab.Screen name="홈" component={() => isLoaded ? <HomeScreen userDB={data} loginUser={loginUser} /> : <HomeScreenSkeleton />} />
         <Tab.Screen name="찾기" component={() => isLoaded ? <></> : <></>} />
         <Tab.Screen name="설정" component={() => isLoaded ? <></> : <></>} />
       </Tab.Navigator>
@@ -117,5 +136,14 @@ const App = () => {
 
   );
 };
+
+
+const styles = StyleSheet.create({
+  profile: {
+    width: 30,
+    height: 30,
+    borderRadius: 30
+  },
+});
 
 export default App;
